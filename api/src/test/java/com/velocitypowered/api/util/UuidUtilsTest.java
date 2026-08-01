@@ -33,7 +33,7 @@ class UuidUtilsTest {
   private static final String ISSUE_109_LEADING_ZERO_UNDASHED = "0d470a25041648a1b7a62a27aa5eb251";
 
   private static final UUID TEST_OFFLINE_PLAYER_UUID = UUID
-      .fromString("708f6260-183d-3912-bbde-5e279a5e739a");
+      .fromString("a7a9078f-f33e-32dc-a6e5-3b845580a39e");
   private static final String TEST_OFFLINE_PLAYER = "tuxed";
 
   @Test
