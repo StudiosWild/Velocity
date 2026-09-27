@@ -51,7 +51,7 @@ public final class ServerCommand {
     final LiteralCommandNode<CommandSource> node = BrigadierCommand
         .literalArgumentBuilder("server")
         .requires(src -> src instanceof Player
-                && src.getPermissionValue("velocity.command.server") != Tristate.FALSE)
+                && src.getPermissionValue("velocity.command.server") == Tristate.TRUE)
         .executes(ctx -> {
           final Player player = (Player) ctx.getSource();
           outputServerInformation(player, server);
