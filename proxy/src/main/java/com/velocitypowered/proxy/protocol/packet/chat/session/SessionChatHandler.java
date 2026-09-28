@@ -17,15 +17,17 @@
 
 package com.velocitypowered.proxy.protocol.packet.chat.session;
 
-import static com.velocitypowered.proxy.protocol.packet.chat.keyed.KeyedChatHandler.invalidCancel;
 import static com.velocitypowered.proxy.protocol.packet.chat.keyed.KeyedChatHandler.invalidChange;
 
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
+import com.velocitypowered.proxy.protocol.MinecraftPacket;
+import com.velocitypowered.proxy.protocol.packet.chat.ChatAcknowledgementPacket;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatHandler;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatQueue;
+import com.velocitypowered.proxy.protocol.packet.chat.LastSeenMessages;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,10 +61,7 @@ public class SessionChatHandler implements ChatHandler<SessionPlayerChatPacket> 
             .thenApply(pme -> {
               PlayerChatEvent.ChatResult chatResult = pme.getResult();
               if (!chatResult.isAllowed()) {
-                if (packet.isSigned()) {
-                  invalidCancel(logger, player);
-                }
-                return null;
+                return acknowledge(newLastSeenMessages);
               }
 
               if (chatResult.getMessage().map(str -> !str.equals(packet.getMessage()))
@@ -86,5 +85,12 @@ public class SessionChatHandler implements ChatHandler<SessionPlayerChatPacket> 
         packet.getTimestamp(),
         packet.getLastSeenMessages()
     );
+  }
+
+  private static MinecraftPacket acknowledge(LastSeenMessages lastSeenMessages) {
+    if (lastSeenMessages == null || lastSeenMessages.getOffset() <= 0) {
+      return null;
+    }
+    return new ChatAcknowledgementPacket(lastSeenMessages.getOffset());
   }
 }
